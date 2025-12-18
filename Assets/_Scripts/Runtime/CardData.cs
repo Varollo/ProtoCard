@@ -53,6 +53,10 @@ public struct CardData
             Debug.LogError($"Failed to load card data from file: {path}\n{e.Message}");
             return null;
         }
-        
+    }
+
+    public override string ToString()
+    {
+        return $"Name: {name}, Description: {description}, Footer: {footer}, Values: [TL: {value_tl}, TR: {value_tr}, BL: {value_bl}, BR: {value_br}], ArtPath: {ArtPath}";
     }
 }

@@ -1,6 +1,4 @@
 using SFB;
-using System;
-using System.Collections;
 using System.IO;
 using System.IO.Compression;
 using UnityEngine;
@@ -19,6 +17,11 @@ public class IOManager : MonoBehaviour
         CreateNewCard();
     }
 
+    public CardData GetLoadedCard()
+    {
+        return _loadedCard;
+    }
+
     private void CreateNewCard()
     {
         _loadedCard = new()
@@ -32,12 +35,16 @@ public class IOManager : MonoBehaviour
             value_br = 0,
         };
 
-        cardBuilder.BuildCard(_loadedCard);
+        if (cardBuilder)
+            cardBuilder.BuildCard(_loadedCard);
     }
 
     public void NewCard()
     {
-        messageDialog.Show("Create New Card", "Are you sure you want to create a new card? Any unsaved changes will be lost.", cancelable: true, CreateNewCard);
+        if (messageDialog)
+            messageDialog.Show("Create New Card", "Are you sure you want to create a new card? Any unsaved changes will be lost.", cancelable: true, CreateNewCard);
+        else
+            CreateNewCard();
     }
 
     public void OpenCard()
@@ -47,14 +54,20 @@ public class IOManager : MonoBehaviour
         if (openPath.Length == 0 || string.IsNullOrEmpty(openPath[0]))
             return;
 
-        CardData? cardData = CardData.LoadCard(openPath[0]);
+        OpenCard(openPath[0]);
+    }
+
+    public void OpenCard(string path)
+    {
+        CardData? cardData = CardData.LoadCard(path);
 
         if (cardData.HasValue)
             _loadedCard = cardData.Value;
         else
-            Debug.LogError("Failed to load card data from file: " + openPath[0]);
+            Debug.LogError("Failed to load card data from file: " + path);
 
-        cardBuilder.BuildCard(_loadedCard);
+        if (cardBuilder)
+            cardBuilder.BuildCard(_loadedCard);
     }
 
     public void SaveCard()
@@ -63,10 +76,21 @@ public class IOManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(path))
             return;
+        
+        SaveCard(path);
+    }
 
-        _loadedCard.CopyData(cardBuilder.GetCardData());
+    public void SaveCard(string path)
+    {
+        if (cardBuilder)
+            _loadedCard.CopyData(cardBuilder.GetCardData());
 
-        using (ZipArchive zip = ZipFile.Open(Path.Combine(Path.GetDirectoryName(path), ".temp_card.prc"), ZipArchiveMode.Create))
+        string tempZipPath = Path.Combine(Application.temporaryCachePath, ".temp_card.prc");
+
+        if (File.Exists(tempZipPath))
+            File.Delete(tempZipPath);
+
+        using (ZipArchive zip = ZipFile.Open(tempZipPath, ZipArchiveMode.Create))
         {
             AddArtToSaveFile(zip);
             AddDataToSaveFile(zip);
@@ -74,30 +98,42 @@ public class IOManager : MonoBehaviour
 
         CommitSaveFile(path);
 
-        cardBuilder.BuildCard(_loadedCard);
+        if (cardBuilder)
+            cardBuilder.BuildCard(_loadedCard);
     }
 
     public void LoadCardImage()
     {
         var filePath = StandaloneFileBrowser.OpenFilePanel("Load Card Image", CardsFolderPath, "png", false);
-        
+
         if (filePath.Length == 0 || string.IsNullOrEmpty(filePath[0]))
             return;
 
-        _loadedCard.CopyData(cardBuilder.GetCardData());
-        _loadedCard.ArtPath = filePath[0];
+        LoadCardImage(filePath[0]);
+    }
 
-        cardBuilder.BuildCard(_loadedCard);
+    public void LoadCardImage(string filePath)
+    {
+        if (cardBuilder)
+            _loadedCard.CopyData(cardBuilder.GetCardData());
+
+        _loadedCard.ArtPath = filePath;
+
+        if (cardBuilder)
+            cardBuilder.BuildCard(_loadedCard);
     }
 
     private void CommitSaveFile(string path)
     {
-        string tempPath = Path.Combine(Path.GetDirectoryName(path), ".temp_card.prc");
+        string tempPath = Path.Combine(Application.temporaryCachePath, ".temp_card.prc");
         
         if (File.Exists(path))
             File.Delete(path);
 
         File.Move(tempPath, path);
+
+        if (File.Exists(tempPath))
+            File.Delete(tempPath);
     }
 
     private void AddDataToSaveFile(ZipArchive zip)
@@ -111,6 +147,9 @@ public class IOManager : MonoBehaviour
 
     private void AddArtToSaveFile(ZipArchive zip)
     {
+        if (string.IsNullOrEmpty(_loadedCard.ArtPath) || !File.Exists(_loadedCard.ArtPath))
+            return;
+
         if (Path.GetExtension(_loadedCard.ArtPath).ToLower() == ".png")
         {
             zip.CreateEntryFromFile(_loadedCard.ArtPath, "card_art.png");

@@ -42,6 +42,9 @@ public static class CardSpriteProvider
                 using ZipArchive zip = ZipFile.OpenRead(path);
                 ZipArchiveEntry imageEntry = zip.GetEntry("card_art.png");
 
+                if (imageEntry == null)
+                    return null;
+
                 using Stream imageStream = imageEntry.Open();
 
                 using MemoryStream ms = new();
