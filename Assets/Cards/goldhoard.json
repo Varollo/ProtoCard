@@ -1,0 +1,9 @@
+{
+  "name": "Gold Hoard",
+  "description": "Gain 1 extra energy next turn.",
+  "footer": "Resource",
+  "value_tl": 17,
+  "value_tr": 73,
+  "value_br": 86,
+  "value_bl": 33
+}

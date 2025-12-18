@@ -1,0 +1,9 @@
+{
+  "name": "Whisperwind",
+  "description": "Draw 2 cards.",
+  "footer": "Utility",
+  "value_tl": 3,
+  "value_tr": 54,
+  "value_br": 91,
+  "value_bl": 7
+}

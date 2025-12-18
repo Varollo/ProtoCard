@@ -1,0 +1,9 @@
+{
+  "name": "Azure Shield",
+  "description": "Grants 10 block to your hero.",
+  "footer": "Defense",
+  "value_tl": 88,
+  "value_tr": 15,
+  "value_br": 63,
+  "value_bl": 29
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Healing Potion",
+  "description": "Restores 8 health to your hero.",
+  "footer": "Consumable",
+  "value_tl": 22,
+  "value_tr": 84,
+  "value_br": 37,
+  "value_bl": 14
+}

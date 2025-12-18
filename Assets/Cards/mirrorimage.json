@@ -1,0 +1,9 @@
+{
+  "name": "Mirror Image",
+  "description": "Next incoming attack is negated.",
+  "footer": "Special",
+  "value_tl": 94,
+  "value_tr": 26,
+  "value_br": 9,
+  "value_bl": 48
+}

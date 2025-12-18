@@ -1,0 +1,9 @@
+{
+  "name": "Runic Bolt",
+  "description": "Deals 3 damage to all enemies.",
+  "footer": "AoE Attack",
+  "value_tl": 50,
+  "value_tr": 4,
+  "value_br": 79,
+  "value_bl": 61
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Shadow Step",
+  "description": "Discard 1 card, gain 'Stealth'.",
+  "footer": "Movement",
+  "value_tl": 65,
+  "value_tr": 40,
+  "value_br": 2,
+  "value_bl": 81
+}
