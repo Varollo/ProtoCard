@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using UnityEngine;
 
 public static class CardSpriteProvider
@@ -21,17 +23,40 @@ public static class CardSpriteProvider
 
         byte[] fileData;
 
-        try
+        if (Path.GetExtension(path).ToLower() == ".png")
         {
-            fileData = File.ReadAllBytes(path);
+            try
+            {
+                fileData = File.ReadAllBytes(path);
+            }
+            catch (IOException e)
+            {
+                Debug.LogError("Failed to read card art file at path: " + path + "\n" + e.Message);
+                return null;
+            }
         }
-        catch (IOException e)
+        else
         {
-            Debug.LogError("Failed to read card art file at path: " + path + "\n" + e.Message);
-            return null;
+            try
+            {
+                using ZipArchive zip = ZipFile.OpenRead(path);
+                ZipArchiveEntry imageEntry = zip.GetEntry("card_art.png");
+
+                using Stream imageStream = imageEntry.Open();
+
+                using MemoryStream ms = new();
+                imageStream.CopyTo(ms);
+
+                fileData = ms.ToArray();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Invalid card art file format at path: " + path + "\n" + e.Message);
+                return null;
+            }
         }
 
-        Texture2D tex = new(2, 2);
+            Texture2D tex = new(2, 2);
 
         if (tex.LoadImage(fileData))
         {

@@ -1,5 +1,8 @@
 using SFB;
+using System;
+using System.Collections;
 using System.IO;
+using System.IO.Compression;
 using UnityEngine;
 
 public class IOManager : MonoBehaviour
@@ -39,7 +42,7 @@ public class IOManager : MonoBehaviour
 
     public void OpenCard()
     {
-        var openPath = StandaloneFileBrowser.OpenFilePanel("Open Card", CardsFolderPath, "json", false);
+        var openPath = StandaloneFileBrowser.OpenFilePanel("Open Card", CardsFolderPath, "prc", false);
 
         if (openPath.Length == 0 || string.IsNullOrEmpty(openPath[0]))
             return;
@@ -56,35 +59,20 @@ public class IOManager : MonoBehaviour
 
     public void SaveCard()
     {
-        var path = StandaloneFileBrowser.SaveFilePanel("Save Card", CardsFolderPath, "New Card", "json");
+        var path = StandaloneFileBrowser.SaveFilePanel("Save Card", CardsFolderPath, "New Card", "prc");
 
         if (string.IsNullOrEmpty(path))
             return;
 
         _loadedCard.CopyData(cardBuilder.GetCardData());
 
-        var cardJson = JsonUtility.ToJson(_loadedCard, true);
-
-        using FileStream fileStream = new(path, FileMode.Create);
-        using StreamWriter writer = new(fileStream);
-        writer.Write(cardJson);
-
-        string artPath = Path.ChangeExtension(path, "png");
-
-        if (_loadedCard.ArtPath != artPath)
+        using (ZipArchive zip = ZipFile.Open(Path.Combine(Path.GetDirectoryName(path), ".temp_card.prc"), ZipArchiveMode.Create))
         {
-            try
-            {
-                File.Copy(_loadedCard.ArtPath, artPath, true);
-            }
-            catch (IOException iox)
-            {
-                Debug.LogError("Failed to copy art file: " + iox.Message);
-                return;
-            }
+            AddArtToSaveFile(zip);
+            AddDataToSaveFile(zip);
         }
 
-        _loadedCard.ArtPath = artPath;
+        CommitSaveFile(path);
 
         cardBuilder.BuildCard(_loadedCard);
     }
@@ -100,5 +88,44 @@ public class IOManager : MonoBehaviour
         _loadedCard.ArtPath = filePath[0];
 
         cardBuilder.BuildCard(_loadedCard);
+    }
+
+    private void CommitSaveFile(string path)
+    {
+        string tempPath = Path.Combine(Path.GetDirectoryName(path), ".temp_card.prc");
+        
+        if (File.Exists(path))
+            File.Delete(path);
+
+        File.Move(tempPath, path);
+    }
+
+    private void AddDataToSaveFile(ZipArchive zip)
+    {
+        var cardJson = JsonUtility.ToJson(_loadedCard, true);
+        var jsonEntry = zip.CreateEntry("card_data.json");
+
+        using StreamWriter zipWriter = new(jsonEntry.Open());
+        zipWriter.Write(cardJson);
+    }
+
+    private void AddArtToSaveFile(ZipArchive zip)
+    {
+        if (Path.GetExtension(_loadedCard.ArtPath).ToLower() == ".png")
+        {
+            zip.CreateEntryFromFile(_loadedCard.ArtPath, "card_art.png");
+        }
+        else
+        {
+            using ZipArchive sourceArchive = ZipFile.OpenRead(_loadedCard.ArtPath);
+
+            ZipArchiveEntry imageEntry = sourceArchive.GetEntry("card_art.png");
+            ZipArchiveEntry newEntry = zip.CreateEntry("card_art.png");
+
+            using Stream sourceStream = imageEntry.Open();
+            using Stream targetStream = newEntry.Open();
+
+            sourceStream.CopyTo(targetStream);
+        }
     }
 }

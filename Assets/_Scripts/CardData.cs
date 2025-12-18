@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using UnityEngine;
 
 public struct CardData
@@ -35,10 +36,15 @@ public struct CardData
 
         try
         {
-            string jsonContent = File.ReadAllText(path);
+            using ZipArchive zip = ZipFile.OpenRead(path);
+            ZipArchiveEntry jsonEntry = zip.GetEntry("card_data.json");
+
+            using StreamReader reader = new(jsonEntry.Open());
+
+            string jsonContent = reader.ReadToEnd();
             CardData cardData = JsonUtility.FromJson<CardData>(jsonContent);
 
-            cardData.ArtPath = Path.ChangeExtension(path, "png");
+            cardData.ArtPath = path;
 
             return cardData;
         }
