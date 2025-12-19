@@ -1,9 +1,0 @@
-{
-  "name": "Ember Claw",
-  "description": "Deals 5 damage to a single enemy.",
-  "footer": "Attack",
-  "value_tl": 45,
-  "value_tr": 92,
-  "value_br": 18,
-  "value_bl": 77
-}

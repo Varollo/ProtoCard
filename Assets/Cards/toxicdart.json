@@ -1,9 +1,0 @@
-{
-  "name": "Toxic Dart",
-  "description": "Inflicts Poison (3 turns).",
-  "footer": "Debuff",
-  "value_tl": 11,
-  "value_tr": 68,
-  "value_br": 42,
-  "value_bl": 98
-}

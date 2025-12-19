@@ -1,9 +1,0 @@
-{
-  "name": "Stone Wall",
-  "description": "Adds 5 permanent defense.",
-  "footer": "Structure",
-  "value_tl": 76,
-  "value_tr": 30,
-  "value_br": 5,
-  "value_bl": 59
-}

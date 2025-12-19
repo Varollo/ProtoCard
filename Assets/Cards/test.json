@@ -1,9 +1,0 @@
-{
-    "name": "CARD NAME",
-    "description": "Card description goes here. Please remember to fill it in!\r\n\r\nYou can also have multiple lines and line skips.",
-    "footer": "Card Footer",
-    "value_tl": 0,
-    "value_tr": 0,
-    "value_bl": 0,
-    "value_br": 0
-}

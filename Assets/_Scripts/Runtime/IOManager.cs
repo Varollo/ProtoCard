@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class IOManager : MonoBehaviour
 {
-    public static readonly string CardsFolderPath = Path.Combine(Application.dataPath, "Cards");
+    public static readonly string CardsFolderPath = Path.Combine(Application.dataPath, "..");
 
     [SerializeField] private CardBuilder cardBuilder;
     [SerializeField] private MessageDialog messageDialog;
