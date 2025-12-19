@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class ScaleOnHover : MonoBehaviour
@@ -16,6 +17,6 @@ public class ScaleOnHover : MonoBehaviour
     }
     public void OnMouseOut()
     {
-        transform.localScale = Vector3.Lerp(transform.localScale, originalScale, 10 * Time.deltaTime);
+        transform.DOScale(originalScale, .1f).SetEase(Ease.InOutQuad);
     }
 }

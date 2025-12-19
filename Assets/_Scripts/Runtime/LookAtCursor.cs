@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +16,6 @@ public class LookAtCursor : MonoBehaviour
 
     public void OnMouseOut()
     {
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, 10 * Time.deltaTime);
+        transform.DORotate(Vector3.zero, .1f).SetEase(Ease.InOutQuad);
     }
 }
